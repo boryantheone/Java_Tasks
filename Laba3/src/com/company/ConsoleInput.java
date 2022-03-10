@@ -1,25 +1,14 @@
 package com.company;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+//класс источника события
+public class ConsoleInput {
+    private IEvent iEvent;
 
-public class ConsoleInput implements IConcoleInput{
-    String journalPath;
-
-    public ConsoleInput(String journalPath) {
-        this.journalPath = journalPath;
+    public ConsoleInput(IEvent iEvent) {
+        this.iEvent = iEvent;
     }
 
-    @Override
-    public void Handler() {
-        try {
-            FileWriter writer = new FileWriter(journalPath, true);
-            BufferedWriter bufferedWriter = new BufferedWriter(writer);
-            bufferedWriter.write("Обращение к потоку ввода с консоли!\n");
-            bufferedWriter.close();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+    public void generateEvent() {
+        iEvent.Handler("Обращение к потоку ввода с консоли");
     }
 }
