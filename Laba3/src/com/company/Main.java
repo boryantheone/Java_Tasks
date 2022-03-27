@@ -1,54 +1,69 @@
 package com.company;
 import java.io.*;
-import java.util.*;
-
 
 public class Main {
+    private static BufferedWriter journal;
 
-    public static void main(String[] args) {
-        String s1, journal;
-        int i = 0;
+    public static void main(String[] args) throws IOException {
 
-        Scanner in = new Scanner(System.in);
-        while (true){
-            System.out.print("Введите путь к журналу -> ");
-            journal = in.nextLine();
-            File f = new File(journal);
-            if (f.exists())
-                break;
-        }
-	    Scanner sc = new Scanner(System.in);
-        System.out.println("Введите число: 0 - ввод с консоли, 1 - чтение из файла");
-        if (sc.hasNextInt()) {
-            i = sc.nextInt();
-        } else {
-            System.out.println("Смотрите выше ^^^");
-        }
-        Scanner sc2 = new Scanner(System.in);
-        if (i == 0) {
-            System.out.println("Введите массив");
-        }
-        else {
-            System.out.println("Введите путь до файла");
-        }
-        s1 = sc2.nextLine();
-        if (i == 1) {
-            File in_filename = new File(s1);
-            StringBuilder sb = new StringBuilder();
-            if (in_filename.exists()) {
+        int sum1 = 0;
+        int sum2 = 0;
+
+        Receiver receiver = new Receiver();
+        ConsoleOutput consoleOutput = new ConsoleOutput(receiver);
+        ConsoleInput consoleInput = new ConsoleInput(receiver);
+        HandleArray handleArray = new HandleArray(receiver);
+
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+
+
+        System.out.println("Введите путь к файлу");
+        consoleOutput.generateEvent();
+
+        String inFilePath = consoleReader.readLine();
+        consoleInput.generateEvent();
+
+        File inFile = new File(inFilePath);
+        if (inFile.exists() && inFile.length() != 0) {
+            try {
+                BufferedReader fileBufferedReader = new BufferedReader(new FileReader(inFile));
+                String argumentsString = fileBufferedReader.readLine();
+                String journalPath = fileBufferedReader.readLine();
+                journal = new BufferedWriter(new FileWriter(journalPath));
+                String[] arguments = argumentsString.split(" ");
+                handleArray.generateEvent();
                 try {
-                    BufferedReader br = new BufferedReader(new FileReader(in_filename.getAbsoluteFile()));
-                    try {
-                        String s;
-                        while ((s = br.readLine()) != null) {
-                            sb.append(s);
-                            sb.append("\n");
+                    handleArray.generateEvent();
+                    for (String s : arguments) {
+                        if (Integer.parseInt(s) < 0 && Integer.parseInt(s) % 2 == 0) {
+                            sum1 += Integer.parseInt(s);
                         }
-                    } finally { br.close(); }
-                } catch (IOException e) { throw new RuntimeException(); }
+                        if (Integer.parseInt(s) < 0 && Integer.parseInt(s) % 2 != 0) {
+                            sum2 += Integer.parseInt(s);
+                        }
+                    }
+                    System.out.println("Сумма нечетных + отрицательных = " + sum1);
+                    writeToJournal("Сумма нечетных + отрицательных = " + sum1);
+                    consoleOutput.generateEvent();
+                    System.out.println("Сумма четных + отрицательных = " + sum2);
+                    writeToJournal("Сумма четных + отрицательных = " + sum2);
+                    consoleOutput.generateEvent();
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Неверный формат данных");
+                    consoleOutput.generateEvent();
+                    writeToJournal("Неверный формат данных");
+                } finally {
+                    journal.close();
+                }
             }
-            System.out.print(sb);
-            in_filename.delete();
+            catch(IOException e){throw new RuntimeException();}
+        }
+    }
+
+
+    public static void writeToJournal(String message) throws IOException{
+        if(journal != null) {
+            journal.write(message + "\n");
         }
     }
 }
