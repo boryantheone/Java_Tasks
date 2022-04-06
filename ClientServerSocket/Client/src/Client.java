@@ -1,30 +1,80 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
-//        Сервер возвращает клиенту результат выражения (допустимые операции «+», «-»).
-//        Операнды и операции передаются за раз по одному (например, выражение «3.4+1.6-
-//        5=» нужно передавать с помощью трёх сообщений: «3.4+», «1.6-» и «5=», где «=» -
-//        признак конца выражения). В случае не возможности разобрать сервером полученную
-//        строку или при переполнении, возникшем при вычислении полученного выражения,
-//        сервер присылает клиенту соответствующее уведомление.
 
-public class Client {
-    public static void main(String[] args) {
-        try (Socket socket = new Socket("127.0.0.1", 8000);
-             BufferedWriter writer = new BufferedWriter(
-                     new OutputStreamWriter(
-                             socket.getOutputStream()));
-             BufferedReader reader = new BufferedReader(
-                     new InputStreamReader(
-                             socket.getInputStream()));
-        ) {
+public class Client implements Runnable {
+    private static String clientJournal;
+    private static int PORT;
+    private static String IP;
+
+    public Client(String IP, int PORT)
+    {
+        this.IP = IP;
+        this.PORT = PORT;
+    }
+
+    public void run() {
+        String messageClient = "";
+        String response = "";
+
+        try {
+            Socket socket = new Socket(IP, PORT);
+            BufferedWriter journalFileWriterClient = new BufferedWriter(new FileWriter(clientJournal));
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                            socket.getOutputStream()));
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            socket.getInputStream()));
+
             System.out.println("Connected to server");
-            String request = "Visaginas";
-            writer.write(request);
-            writer.newLine();
-            writer.flush();
+            System.out.println("Введите выражение: ");
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                messageClient = scanner.nextLine();
+                writer.write(messageClient);
+                writer.flush();
+
+                response = reader.readLine();
+                journalFileWriterClient.write(messageClient + "\n");
+                journalFileWriterClient.write(response + "\n");
+//                if (messageClient.contains("=")) {
+//
+//                }
+                Thread.yield();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public static void main(String[] args) {
+
+        BufferedReader readerIn = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            System.out.println("Введите путь к журналу клиента");
+            clientJournal = readerIn.readLine();
+            File clientJournalFile = new File(clientJournal);
+            try{
+                if (!clientJournalFile.exists())
+                    clientJournalFile.createNewFile();
+            } catch (IOException e){
+                System.out.println(e);
+                return;
+            }
+            System.out.println("Введите порт");
+            PORT = Integer.parseInt(readerIn.readLine());
+            System.out.println("Введите адрес");
+            IP = readerIn.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Client client = new Client(IP, PORT);
+        Thread th = new Thread(client);
+        th.start();
     }
 }
