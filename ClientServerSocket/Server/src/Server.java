@@ -1,4 +1,3 @@
-import com.sun.xml.internal.xsom.XSUnionSimpleType;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -23,10 +22,9 @@ import java.util.Scanner;
 //        сервер присылает клиенту соответствующее уведомление.
 
 public class Server {
-    private static final int TIME_SEND_SLEEP = 100;
     private static final int COUNT_TO_SEND = 10;
     public static final int READ_BUFFER_SIZE = 10;
-    static String fileSettingsPath = "/Users/jcollin/IdeaProjects/ClientServerSocket/Server/fileSettings";
+    static String fileSettingsPath = "/Users/boryantheone/IdeaProjects/Java_Labs/ClientServerSocket/Server/src/fileSettings";
     private ServerSocket serverSocket;
     private String serverJournal;
 
@@ -66,48 +64,178 @@ public class Server {
     public void go() {
         class Listener implements Runnable {
             Socket socket;
+
             public Listener(Socket aSocket) {
                 socket = aSocket;
             }
+
             public void run() {
-                double result = 0;
-                String message = "";
+                String response = "";
+                String expression = "";
+                Boolean sign = null;
+                Double intermediate = null;
+                Double result = null;
+                boolean isError = false;
+//                String response = "";
+//                String message = "";
+//                double summa = 0;
+//                boolean bool=true;
                 try {
                     System.out.println("Слушатель запущен");
-                    BufferedWriter journalFileWriter = new BufferedWriter(new FileWriter(serverJournal));
-                    BufferedWriter writer = new BufferedWriter(
-                                                new OutputStreamWriter(
-                                                    socket.getOutputStream()));
-                    BufferedReader reader = new BufferedReader(
-                                                new InputStreamReader(
-                                                     socket.getInputStream()));
 
+                    InputStream in = socket.getInputStream();
+                    InputStreamReader streamReader = new InputStreamReader(in);
+                    BufferedReader reader = new BufferedReader(streamReader);
 
-                    while (!message.contains("=")) {
-                        message = reader.readLine();
-                        journalFileWriter.write(message + "\n");
+//                    OutputStream out = socket.getOutputStream();
+//                    OutputStreamWriter writer = new OutputStreamWriter(out);
+//                    PrintWriter pWriter = new PrintWriter(writer);
 
-                        //задача сервера
+                    FileWriter fileWriter = new FileWriter(serverJournal, true);
+                    BufferedWriter bw = new BufferedWriter(fileWriter);
+
+                    while (!expression.contains("=")){
+                        expression = reader.readLine();
+                        System.out.println(expression);
+
+                        bw.write(expression + "\n");
+
+                        char current;
+
+                        for (int i = 0; i < expression.length(); i++){
+                            current = expression.charAt(i);
+                            if (Character.isDigit(current) || current == '.')
+                                continue;
+                            else if (current == '+' || current == '-' || current == '='){
+                                String considered = expression.substring(0, i);
+
+                                try {
+                                    intermediate = Double.parseDouble(considered);
+                                } catch (Exception e){
+                                    isError = true;
+                                    break;
+                                }
+
+                                if (sign != null){
+                                    if (sign)
+                                        result += intermediate;
+                                    else
+                                        result -= intermediate;
+                                }
+                                else result = intermediate;
+
+                                switch (current) {
+                                    case '+' -> sign = true;
+                                    case '-' -> sign = false;
+                                }
+
+                                if (current == '=') {
+                                    break;
+                                }
+                            }
+                            else{
+                                isError = true;
+                                break;
+                            }
+                        }
+                        if (isError) {
+                            response = "Ошибка в выражении!\n";
+                            break;
+                        }
+                        response = result.toString();
                     }
+                    bw.close();
+
+                    OutputStream out = socket.getOutputStream();
+                    OutputStreamWriter writer = new OutputStreamWriter(out);
+                    PrintWriter pWriter = new PrintWriter(writer);
+                    pWriter.println(response);
+                    pWriter.flush();
+
+
+                }catch(IOException e){
+                    System.err.println("Exception: " + e.toString());
                 }
-                catch (IOException e) {
-                    System.err.println("Исключение: " + e.toString());
-                }
+//                        message = reader.readLine();
+////                        if (message.contains("="))
+////                            break;
+//
+//                        bw.write(message + "\n");
+//
+//                        if (!message.isEmpty()) {
+//                            if(message.contains("!")){
+//                                break;
+//                            }
+//                            if (message.matches("\\d(\\d+)?(\\.\\d+)?[-+=]")){
+//                                if (message.contains("=")){
+//                                    String[] num = message.split("=");
+//                                    if (num.length>1) {
+//                                        throw new IOException();
+//                                    }else{
+//                                        if (bool) {
+//                                            summa+=Double.parseDouble(num[0]);
+//                                        } else {
+//                                            summa-=Double.parseDouble(num[0]);
+//                                        }
+//                                        bool=true;
+//                                        pWriter.write(String.valueOf(summa));
+//                                        pWriter.flush();
+//                                        System.out.println(summa);
+//                                        summa = 0;
+//                                    }
+//                                }
+//                                else if (message.charAt(message.length()-1)=='+') {
+//                                    String[] num = message.split("[+]");
+//                                    if (num.length>1) {
+//                                        throw new IOException();
+//                                    }else{
+//                                        if (bool) {
+//                                            summa+=Double.parseDouble(num[0]);
+//                                        } else {
+//                                            summa-=Double.parseDouble(num[0]);
+//                                        }
+//                                        bool=true;
+//                                    }
+//                                }
+//                                else  if (message.charAt(message.length()-1)=='-') {
+//                                    String[] num = message.split("-");
+//                                    if (num.length>1) {
+//                                        throw new IOException();
+//                                    }else{
+//                                        if (bool) {
+//                                            summa+=Double.parseDouble(num[0]);
+//                                        } else {
+//                                            summa-=Double.parseDouble(num[0]);
+//                                        }
+//                                        bool=false;
+//                                    }
+//                                }
+//                            }
+//                            else{
+//                                pWriter.write("Введен неверный знак!");
+//                                pWriter.flush();
+//                            }
+//                        }
+//                    }
+//                    bw.close();
+//
+//                } catch (IOException e) {
+//                    System.err.println("Исключение: " + e.toString());
+//                }
             }
         }
-        System.out.println("Сервер запущен...");
-        while(true){
-            try{
+        while (true)
+        {
+            try {
                 Socket socket = serverSocket.accept();
                 Listener listener = new Listener(socket);
                 Thread thread = new Thread(listener);
                 thread.start();
-            }catch(IOException e){
+            } catch (IOException e) {
                 System.err.println("Исключение: " + e.toString());
             }
         }
     }
-
 
     private static int getPortFromFileSettings(String fileSettingsPath) throws IOException {
         File file = new File(fileSettingsPath);
@@ -125,6 +253,8 @@ public class Server {
         }
         return port;
     }
+
 }
+
 
 
