@@ -1,0 +1,1 @@
+http://localhost:8000/Laba_7_war_exploded/servlet-app7?defaultSize=true&array=2_1_-4_34_5423_-23_65_1
