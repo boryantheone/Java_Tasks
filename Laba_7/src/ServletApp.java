@@ -30,6 +30,7 @@ import java.util.ArrayList;
 public class ServletApp extends HttpServlet {
 
 	int triggerServlet;
+	int	counter;
 	int     minimalFontSize = 5;
 	int     fontSize;
 	int     summEvenOrNegativeNumbers = 0;
@@ -38,7 +39,7 @@ public class ServletApp extends HttpServlet {
 	private boolean arrayWithInvalidNumbers = false;
 
 	public ServletApp(){
-		triggerServlet = 0;
+		counter = 0;
 		fontSize = 0;
 	}
 
@@ -62,7 +63,15 @@ public class ServletApp extends HttpServlet {
 		checkFontSize();
 		setMainTableInHtmlPage();
 		closeHtmlPage();
-		triggerServlet++;
+		switchTrigger();
+		counter++;
+	}
+
+	private void switchTrigger() {
+		if ((counter % 2) == 0)
+			triggerServlet = 0;
+		else
+			triggerServlet = 1;
 	}
 
 	private void solveTaskFrom1Lab(String arrayFromParameter) {
@@ -164,11 +173,5 @@ public class ServletApp extends HttpServlet {
 		processRequest(request, response);
 
 	}
-
-//	@Override
-//	public void doPost(HttpServletRequest request, HttpServletResponse response)
-//			throws IOException {
-//		//processRequest(request, response);
-//	}
 
 }
