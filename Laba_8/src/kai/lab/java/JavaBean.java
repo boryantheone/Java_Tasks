@@ -1,3 +1,4 @@
+package kai.lab.java;
 
 public class JavaBean {
 		private int countPageRefresh;

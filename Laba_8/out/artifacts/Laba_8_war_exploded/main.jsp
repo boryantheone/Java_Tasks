@@ -13,7 +13,7 @@
     <title>Главная страница</title>
 </head>
 <body>
-<jsp:useBean id="mybean" scope="session" class="JavaBean" />
+<jsp:useBean id="mybean" scope="session" class="kai.lab.java.JavaBean" />
 <%
     try {
         String array = request.getParameter("array");

@@ -11,7 +11,7 @@
     <title>Title</title>
 </head>
 <body>
-        <jsp:useBean id="mybean" scope="session" class="JavaBean" />
+        <jsp:useBean id="mybean" scope="session" class="kai.lab.java.JavaBean" />
         <%
             String summEvenOrNegativeNumbers;
             String summOddOrNegativeNumbers;
@@ -34,5 +34,6 @@
         </table>
     </h1>
 
+        <a href="main.jsp"> Возврат на главную страницу</a>
 </body>
 </html>
