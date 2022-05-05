@@ -29,14 +29,16 @@ import java.util.ArrayList;
 //@WebServlet(name = "ServletApp", value = "/ServletApp")
 public class ServletApp extends HttpServlet {
 
-	int triggerServlet;
-	int	counter;
-	int     minimalFontSize = 5;
-	int     fontSize;
-	int     summEvenOrNegativeNumbers = 0;
-	int     summOddOrNegativeNumbers = 0;
+	int 			triggerServlet;
+	int				counter;
+	int     		minimalFontSize = 5;
+	int     		fontSize;
+	int     		summEvenOrNegativeNumbers = 0;
+	int     		summOddOrNegativeNumbers = 0;
 	PrintWriter     out;
 	private boolean arrayWithInvalidNumbers = false;
+	String			fio;
+	String			group;
 
 	public ServletApp(){
 		counter = 0;
@@ -53,6 +55,8 @@ public class ServletApp extends HttpServlet {
 	 */
 	public void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		fio = request.getParameter("fio");
+		group = request.getParameter("group");
 		solveTaskFrom1Lab(request.getParameter("array"));
 		if (checkDefaultSize(request.getParameter("defaultSize"))) {
 			setFontSizeToDefault();
@@ -151,7 +155,12 @@ public class ServletApp extends HttpServlet {
 		out.println("<!DOCTYPE html>");
 		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>Васильева Н.Ю. гр.4310</title>");
+		if (fio == null || group == null) {
+			out.println("<title> НЕ УКАЗАНЫ ПАРАМЕТРЫ</title>");
+		}
+		else {
+			out.println("<title>" + fio + group + "</title>");
+		}
 		out.println("</head>");
 		out.println("<body>");
 	}
