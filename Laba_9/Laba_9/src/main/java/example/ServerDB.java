@@ -275,15 +275,23 @@ public  class ServerDB {
 	}
 
 	public static void deleteFieldsFromRow(int id) {
-//		try {
-//			request = connection.prepareStatement("UPDATE Book SET author = " ", " +
-//					"locker = "", shelf = "" WHERE id = ?");
-//			request.executeUpdate();
-//			System.out.println("Место на " + floor + " этаже обновлено.");
-//			request.close();
-//		} catch (SQLException e) {
-//			System.out.println("Произошла ошибка при сбросе!");
-//		}
+
+		try {
+			request = connection.prepareStatement("UPDATE Book SET author = ? , publication_name  = ?, publisher = ?, year_public = ?, pages = ?, year_write = ?, weight = ?, location_id = ? WHERE id = ?");
+			request.setString(1, "");
+			request.setString(2, "");
+			request.setString(3,  "");
+			request.setInt(4, 0);
+			request.setInt(5, 0);
+			request.setInt(6, 0);
+			request.setInt(7, 0);
+			request.setInt(8, 0);
+			request.setInt(9, id);
+			request.executeUpdate();
+			request.close();
+		} catch (SQLException e) {
+			System.out.println("Произошла ошибка при сбросе!");
+		}
 	}
 
 

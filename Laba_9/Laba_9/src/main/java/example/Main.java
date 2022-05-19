@@ -136,10 +136,10 @@ public class Main {
 					Scanner scan = new Scanner(file);
 					String ids = scan.nextLine();
 					String[] array_id = ids.split(" ");
-					for (int i = 0; i < array_id.length - 1; i++) {
-						if (ServerDB.checkExistsLocation(Integer.parseInt(array_id[i]))) {
+					System.out.println(ids);
+					for (int i = 0; i <= array_id.length - 1; i++) {
+						if (ServerDB.checkExistsBook(Integer.parseInt(array_id[i]))) {
 							System.out.println("Место с таким id не существует!");
-							continue ;
 						} else {
 							ServerDB.deleteFieldsFromRow(Integer.parseInt(array_id[i]));
 						}
@@ -149,9 +149,9 @@ public class Main {
 				}else if (command == 14) {
 					break;
 				}
-//				else {
-//					System.out.println("Такой команды не существует.");
-//				}
+				else {
+					System.out.println("Такой команды не существует.");
+				}
 			} catch (InputMismatchException ex) {
 				System.out.println("Попробуй ввести снова...");
 				scanner.next();
