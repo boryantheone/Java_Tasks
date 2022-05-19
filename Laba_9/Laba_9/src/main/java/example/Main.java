@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws  SQLException, ClassNotFoundException, FileNotFoundException {
+	public static void main(String[] args) throws  SQLException, ClassNotFoundException, FileNotFoundException, NoSuchElementException {
 		Scanner scanner = new Scanner(System.in);
 
 		ServerDB.openDb();
@@ -131,22 +131,27 @@ public class Main {
 					ServerDB.showSecondFieldInAllBooksByLexicOrder();
 				}
 				if (command == 13) {
-					System.out.println("13 ryjgrf");
 					FileReader file = new FileReader("/Users/boryantheone/IdeaProjects/Java_Labs/Laba_9/Laba_9/src/main/java/example/file.txt");
 					Scanner scan = new Scanner(file);
-					String ids = scan.nextLine();
-					String[] array_id = ids.split(" ");
-					System.out.println(ids);
-					for (int i = 0; i <= array_id.length - 1; i++) {
-						if (ServerDB.checkExistsBook(Integer.parseInt(array_id[i]))) {
-							System.out.println("Место с таким id не существует!");
+					try {
+						String ids = scan.nextLine();
+						if (ids.length() > 0) {
+							String[] array_id = ids.split(" ");
+							for (int i = 0; i <= array_id.length - 1; i++) {
+								if (ServerDB.checkExistsBook(Integer.parseInt(array_id[i]))) {
+									System.out.println("Место с таким id не существует!");
+								} else {
+									ServerDB.deleteFieldsFromRow(Integer.parseInt(array_id[i]));
+								}
+							}
 						} else {
-							ServerDB.deleteFieldsFromRow(Integer.parseInt(array_id[i]));
+							System.out.println("Файл пустой!");
 						}
+					} catch (Exception e){
+						System.out.println("Файл пустой!");
 					}
-//					System.out.println(scan.nextLine());
 
-				}else if (command == 14) {
+				} else if (command == 14) {
 					break;
 				}
 				else {
